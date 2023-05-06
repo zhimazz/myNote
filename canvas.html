@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="full-screen" content="yes">
+  <meta name="browsermode" content="application">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="x5-page-mode" content="app">
+  <meta charset="utf-8">
+  <title>CWMS 标签云</title>
+  <style>
+    #canvas_draw {
+        margin: 0px;
+    }
+    img {
+        position: absolute;
+        z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <input id="img_upload" type="file"><br>
+  <img id="img_show" src="" alt=""/>
+  <div>
+    <canvas id="canvas_draw" width="360px" height="360px"></canvas>
+  </div>
+  <div>
+    <button id="mask">mask</button>
+    <button id="clear">clear</button>
+  </div>
+</body>
+<script>
+    var canvas = document.getElementById('canvas_draw')
+    var ctx = canvas.getContext('2d')
+    var imgDom = document.getElementById('img_show')
+    document.getElementById('img_upload').onchange = function() {
+        imgDom.setAttribute('src', window.URL.createObjectURL(this.files[0]))
+        setTimeout(() => {
+            var img = new Image()
+            img.src = imgDom.src
+            canvas.width = img.width
+            canvas.height = img.height
+        }, 300);
+    }
+    var drag = false
+    var mask = document.getElementById('mask')
+    mask.onclick = function() {
+        canvas.onmousedown = function(e) {
+            drag = true
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)
+            ctx.strokeStyle = 'red'
+            ctx.lineWidth = 30
+        }
+        canvas.onmouseup = function(e) {
+            drag = false
+            ctx.closePath();
+        }
+        canvas.onmousemove = function(e) {
+            if (drag) {
+                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)
+                ctx.stroke()
+            }
+        }
+    }
+    var clear = document.getElementById('clear')
+    clear.onclick = function() {
+        canvas.onmousedown = function(e) {
+            drag = true
+            ctx.clearRect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, 30, 30)
+        }
+        canvas.onmouseup = function(e) {
+            drag = false
+        }
+        canvas.onmousemove = function(e) {
+            if (drag) {
+                ctx.clearRect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, 30, 30)
+            }
+        }
+    }
+    
+</script>
+</html>
